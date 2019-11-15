@@ -32,11 +32,11 @@ func (h *Handler) updateIncomeByIDTable(c echo.Context, req *updateIncomeReq, id
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
-	stmtIns := `UPDATE income set
+	stmtUpdate := `UPDATE income set
 		income_group_id = ?, amount = ?, date = ?, updated_date = ?, updated_by = ?
 		where user_id = ? and id = ?`
 
-	res, err := h.DB.Exec(stmtIns,
+	res, err := h.DB.Exec(stmtUpdate,
 		req.IncomeGroupID,
 		req.Amount,
 		req.Date,
