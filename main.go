@@ -11,6 +11,7 @@ import (
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/phatpan/working-with-angular-api/income"
 	"github.com/phatpan/working-with-angular-api/logs"
+	"github.com/phatpan/working-with-angular-api/outcome"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
@@ -37,6 +38,7 @@ func main() {
 	}))
 
 	income.NewHandler(e, db, fieldLogger)
+	outcome.NewHandler(e, db, fieldLogger)
 
 	logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }
