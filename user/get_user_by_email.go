@@ -21,7 +21,7 @@ func (h *Handler) getUserByEmail(c echo.Context) error {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, nil)
 		}
-		h.Logger(c).Errorf("getUserByDeviceId error: %v", err)
+		h.Logger(c).Errorf("getUserByEmail error: %v", err)
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	defer rows.Close()
@@ -30,7 +30,7 @@ func (h *Handler) getUserByEmail(c echo.Context) error {
 		var u userResponse
 		err := rows.Scan(&u.ID, &u.Name)
 		if err != nil {
-			h.Logger(c).Errorf("Get getUserByDeviceId error: %v", err)
+			h.Logger(c).Errorf("getUserByEmail error: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{
 				"code":    "U-5001",
 				"message": "System error, please try again",
@@ -40,7 +40,7 @@ func (h *Handler) getUserByEmail(c echo.Context) error {
 	}
 	err = rows.Err()
 	if err != nil {
-		h.Logger(c).Errorf("Cannot Get getUserByDeviceId error: %v", err)
+		h.Logger(c).Errorf("Cannot getUserByEmail error: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"code":    "U-5002",
 			"message": "System error, please try again",

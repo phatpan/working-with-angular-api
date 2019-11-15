@@ -11,13 +11,14 @@ var ct time.Time
 
 type UserReq struct {
 	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 type UserResponse struct {
 	ID int64 `json:"id"`
 }
 
-func (h *Handler) saveUserByEmail(c echo.Context) error {
+func (h *Handler) addUserByEmail(c echo.Context) error {
 	u := &UserReq{}
 	if err := c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
@@ -26,10 +27,10 @@ func (h *Handler) saveUserByEmail(c echo.Context) error {
 		})
 	}
 
-	return h.insertUserByDeviceIDTable(c, u)
+	return h.insertUserByEmailTable(c, u)
 }
 
-func (h *Handler) insertUserByDeviceIDTable(c echo.Context, u *UserReq) error {
+func (h *Handler) insertUserByEmailTable(c echo.Context, u *UserReq) error {
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 	resp := UserResponse{}
@@ -45,10 +46,10 @@ func (h *Handler) insertUserByDeviceIDTable(c echo.Context, u *UserReq) error {
 	defer rows.Close()
 
 	stmtIns := `INSERT INTO users (
-	email, created_date)
-	VALUES (?, ?)`
+	email, name, created_date)
+	VALUES (?, ?, ?)`
 
-	res, err := h.DB.Exec(stmtIns, u.Email, ct)
+	res, err := h.DB.Exec(stmtIns, u.Email, u.Name, ct)
 	uid, err := res.LastInsertId()
 
 	if err != nil {
