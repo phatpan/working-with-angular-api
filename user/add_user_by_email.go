@@ -46,10 +46,10 @@ func (h *Handler) insertUserByEmailTable(c echo.Context, u *UserReq) error {
 	defer rows.Close()
 
 	stmtIns := `INSERT INTO users (
-	email, name, created_date)
-	VALUES (?, ?, ?)`
+	email, name, created_date, created_by)
+	VALUES (?, ?, ?, ?)`
 
-	res, err := h.DB.Exec(stmtIns, u.Email, u.Name, ct)
+	res, err := h.DB.Exec(stmtIns, u.Email, u.Name, ct, 1)
 	uid, err := res.LastInsertId()
 
 	if err != nil {

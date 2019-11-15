@@ -12,6 +12,7 @@ import (
 	"github.com/phatpan/working-with-angular-api/income"
 	"github.com/phatpan/working-with-angular-api/logs"
 	"github.com/phatpan/working-with-angular-api/outcome"
+	"github.com/phatpan/working-with-angular-api/user"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
@@ -20,7 +21,7 @@ func main() {
 	var env, port, dsn string
 	flag.StringVar(&env, "env", "dev", "running environment")
 	flag.StringVar(&port, "port", "9003", "running port number")
-	flag.StringVar(&dsn, "dsn", "prevent:1q2w3e4r@tcp(seminarsaito.cyhjgzkclcwo.ap-southeast-1.rds.amazonaws.com:3306)/prevent_dementia?parseTime=true", "datasource name")
+	flag.StringVar(&dsn, "dsn", "work:Work@1q2w3e4r5t@tcp(103.74.254.157:3306)/ohmymoney?parseTime=true", "datasource name")
 	flag.Parse()
 
 	db := makeDBConnection(dsn)
@@ -37,6 +38,7 @@ func main() {
 		AllowMethods: []string{echo.POST, echo.PUT, echo.GET},
 	}))
 
+	user.NewHandler(e, db, fieldLogger)
 	income.NewHandler(e, db, fieldLogger)
 	outcome.NewHandler(e, db, fieldLogger)
 
