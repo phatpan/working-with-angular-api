@@ -1,4 +1,4 @@
-package income
+package outcome
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ type foodSelectedIDReq struct {
 	ID []int `json:"id"`
 }
 
-func (h *Handler) saveIncomeByEmail(c echo.Context) error {
+func (h *Handler) addOutcomeByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
 	food := &foodSelectedIDReq{}

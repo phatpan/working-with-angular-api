@@ -23,6 +23,11 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 
 	e.GET("/outcome/group-types", h.getOutcomeGroupList)
 	e.GET("/outcome/types", h.getOutcomeTypeList)
+
+	e.GET("/outcome/id/:id", h.getOutcomeListByUserID)
+	e.POST("/outcome", h.addOutcomeByUserID)
+	e.PUT("/outcome/id/:id", h.updateOutcomeByUserID)
+	e.DELETE("/outcome/id/:id", h.deleteOutcomeByUserID)
 }
 
 // Logger return logger for given echo context

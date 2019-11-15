@@ -1,4 +1,4 @@
-package income
+package outcome
 
 import (
 	"database/sql"
@@ -12,7 +12,7 @@ type incomeResp struct {
 	Amount        int `json:"amount"`
 }
 
-func (h *Handler) getIncomeListByUserID(c echo.Context) error {
+func (h *Handler) getOutcomeListByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
 	stmt := "select income_group_id, amount from income where email = ?"

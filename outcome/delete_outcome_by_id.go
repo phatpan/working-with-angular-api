@@ -1,4 +1,4 @@
-package income
+package outcome
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) deleteIncomeByUserID(c echo.Context) error {
+func (h *Handler) deleteOutcomeByUserID(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, nil)
 }
