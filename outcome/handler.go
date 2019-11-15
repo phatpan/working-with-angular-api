@@ -21,6 +21,7 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 		FieldLogger: logger,
 	}
 
+	e.GET("/outcome/group-types", h.getOutcomeGroupList)
 	e.GET("/outcome/types", h.getOutcomeTypeList)
 }
 

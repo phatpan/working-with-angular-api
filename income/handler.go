@@ -21,7 +21,7 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 		FieldLogger: logger,
 	}
 
-	e.GET("/income/types", h.getIncomeTypeList)
+	e.GET("/income/group-types", h.getIncomeGroupList)
 }
 
 // Logger return logger for given echo context

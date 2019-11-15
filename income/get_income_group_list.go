@@ -12,7 +12,7 @@ type foodResp struct {
 	Title string `json:"title"`
 }
 
-func (h *Handler) getIncomeTypeList(c echo.Context) error {
+func (h *Handler) getIncomeGroupList(c echo.Context) error {
 	stmt := "select id, title from food"
 	foods := []foodResp{}
 
