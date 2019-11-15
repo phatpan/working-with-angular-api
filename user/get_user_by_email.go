@@ -14,9 +14,41 @@ type userResponse struct {
 
 func (h *Handler) getUserByEmail(c echo.Context) error {
 	email := c.Param("email")
+
+	stmtCount := "select count(*) from users where email = ?"
+	rows, err := h.DB.Query(stmtCount, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return c.JSON(http.StatusNotFound, nil)
+		}
+		h.Logger(c).Errorf("getUserByEmail error: %v", err)
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	defer rows.Close()
+
+	var count int
+
+	for rows.Next() {
+		if err := rows.Scan(&count); err != nil {
+			h.Logger(c).Errorf("getUserByEmail error: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{
+				"code":    "U-5001",
+				"message": "System error, please try again",
+			})
+		}
+	}
+
+	if count == 0 {
+		h.Logger(c).Errorf("getUserByEmail error: %v", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"code":    "U-5001",
+			"message": "Invalid Email, no user found",
+		})
+	}
+
 	stmt := "select id, name from users where email = ?"
 	user := userResponse{}
-	rows, err := h.DB.Query(stmt, email)
+	rows, err = h.DB.Query(stmt, email)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, nil)
