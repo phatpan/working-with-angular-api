@@ -12,7 +12,7 @@ type incomeResp struct {
 	Amount        int `json:"amount"`
 }
 
-func (h *Handler) getIncomeByEmail(c echo.Context) error {
+func (h *Handler) getIncomeListByEmail(c echo.Context) error {
 	uid := c.Param("id")
 
 	stmt := "select income_group_id, amount from income where email = ?"
