@@ -7,58 +7,52 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type foodSelectedIDReq struct {
-	ID     int `json:"id"`
-	Amount int `json:"amount"`
+type updateIncomeReq struct {
+	UserID        int       `json:"userId"`
+	IncomeGroupID int       `json:"incomeGroupId"`
+	Amount        int       `json:"amount"`
+	Date          time.Time `json:"date"`
 }
 
 func (h *Handler) updateIncomeByUserID(c echo.Context) error {
-	uid := c.Param("id")
+	id := c.Param("id")
 
-	food := &foodSelectedIDReq{}
-	if err := c.Bind(food); err != nil {
+	income := &updateIncomeReq{}
+	if err := c.Bind(income); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"code":    "F-5003",
 			"message": "RequestBody invalid",
 		})
 	}
 
-	return h.updateIncomeByIDTable(c, food, uid)
+	return h.updateIncomeByIDTable(c, income, id)
 }
 
-func (h *Handler) updateIncomeByIDTable(c echo.Context, food *foodSelectedIDReq, uid interface{}) error {
+func (h *Handler) updateIncomeByIDTable(c echo.Context, req *updateIncomeReq, id interface{}) error {
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
-	stmtDeletePayment := `DELETE FROM m_food WHERE user_id = ?;`
-	_, err := h.DB.Exec(stmtDeletePayment, uid)
+	stmtIns := `UPDATE income set
+		income_group_id = ?, amount = ?, date = ?, updated_date = ?, updated_by = ?
+		where user_id = ? and id = ?`
+
+	_, err := h.DB.Exec(stmtIns,
+		req.IncomeGroupID,
+		req.Amount,
+		req.Date,
+		ct,
+		req.UserID,
+		req.UserID,
+		id,
+	)
+
 	if err != nil {
-		h.Logger(c).Errorf("deleteFoodByUserID error: %v", err)
+		h.Logger(c).Errorf("updateIncomeByIDTable error: %v", err)
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"code":    "F-5004",
-			"message": err,
+			"message": "System error, please try again",
 		})
 	}
 
-	// for _, fid := range food.ID {
-
-	// 	stmtIns := `INSERT INTO m_food (
-	// 	food_id, user_id, created_date)
-	// 	VALUES (?, ?, ?)`
-
-	// 	_, err := h.DB.Exec(stmtIns,
-	// 		fid,
-	// 		uid,
-	// 		ct)
-
-	// 	if err != nil {
-	// 		h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
-	// 		return c.JSON(http.StatusInternalServerError, echo.Map{
-	// 			"code":    "F-5004",
-	// 			"message": "System error, please try again",
-	// 		})
-	// 	}
-	// }
-
-	return c.JSON(http.StatusNoContent, nil)
+	return c.JSON(http.StatusOK, echo.Map{})
 }

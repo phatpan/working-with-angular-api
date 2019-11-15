@@ -33,7 +33,7 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 	ct.Format(time.RFC3339)
 
 	stmtIns := `INSERT INTO income (
-		user_id, income_group_id, amount, date, created_date)
+		user_id, income_group_id, amount, date, created_date, created_by)
 		VALUES (?, ?, ?, ?, ?)`
 
 	_, err := h.DB.Exec(stmtIns,
@@ -41,7 +41,8 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 		req.IncomeGroupID,
 		req.Amount,
 		req.Date,
-		ct)
+		ct,
+		req.UserID)
 
 	if err != nil {
 		h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
