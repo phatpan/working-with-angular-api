@@ -36,7 +36,7 @@ func (h *Handler) updateIncomeByIDTable(c echo.Context, req *updateIncomeReq, id
 		income_group_id = ?, amount = ?, date = ?, updated_date = ?, updated_by = ?
 		where user_id = ? and id = ?`
 
-	_, err := h.DB.Exec(stmtIns,
+	res, err := h.DB.Exec(stmtIns,
 		req.IncomeGroupID,
 		req.Amount,
 		req.Date,
@@ -45,6 +45,22 @@ func (h *Handler) updateIncomeByIDTable(c echo.Context, req *updateIncomeReq, id
 		req.UserID,
 		id,
 	)
+
+	if err != nil {
+		h.Logger(c).Errorf("updateIncomeByIDTable error: %v", err)
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"code":    "F-5004",
+			"message": "System error, please try again",
+		})
+	}
+
+	count, err := res.RowsAffected()
+	if count == 0 {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"code":    "F-5004",
+			"message": "Invalid UserId or ID, please try again",
+		})
+	}
 
 	if err != nil {
 		h.Logger(c).Errorf("updateIncomeByIDTable error: %v", err)
