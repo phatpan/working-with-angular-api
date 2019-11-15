@@ -9,14 +9,12 @@ import (
 
 var ct time.Time
 
-type foodSelectedIDReq struct {
+type incomeReq struct {
 	ID []int `json:"id"`
 }
 
 func (h *Handler) addIncomeByUserID(c echo.Context) error {
-	uid := c.Param("id")
-
-	food := &foodSelectedIDReq{}
+	food := &incomeReq{}
 	if err := c.Bind(food); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"code":    "F-5003",
@@ -24,15 +22,15 @@ func (h *Handler) addIncomeByUserID(c echo.Context) error {
 		})
 	}
 
-	return h.insertManageFoodByUserIDTable(c, food, uid)
+	return h.insertManageFoodByUserIDTable(c, food)
 }
 
-func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, food *foodSelectedIDReq, uid interface{}) error {
+func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) error {
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
 	stmtDeletePayment := `DELETE FROM m_food WHERE user_id = ?;`
-	_, err := h.DB.Exec(stmtDeletePayment, uid)
+	_, err := h.DB.Exec(stmtDeletePayment, req.ID)
 	if err != nil {
 		h.Logger(c).Errorf("deleteFoodByUserID error: %v", err)
 		return c.JSON(http.StatusInternalServerError, echo.Map{
