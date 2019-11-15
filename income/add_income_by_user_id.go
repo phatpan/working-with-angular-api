@@ -34,7 +34,7 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 
 	stmtIns := `INSERT INTO income (
 		user_id, income_group_id, amount, date, created_date, created_by)
-		VALUES (?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?)`
 
 	_, err := h.DB.Exec(stmtIns,
 		req.UserID,

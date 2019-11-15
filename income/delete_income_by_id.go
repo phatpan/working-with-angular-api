@@ -12,6 +12,7 @@ type deleteIncomeReq struct {
 }
 
 func (h *Handler) deleteIncomeByUserID(c echo.Context) error {
+	uid := c.Param("userId")
 	id := c.Param("id")
 	income := &updateIncomeReq{}
 	if err := c.Bind(income); err != nil {
@@ -21,16 +22,16 @@ func (h *Handler) deleteIncomeByUserID(c echo.Context) error {
 		})
 	}
 
-	return h.deleteIncomeByIDTable(c, income, id)
+	return h.deleteIncomeByIDTable(c, uid, id)
 }
 
-func (h *Handler) deleteIncomeByIDTable(c echo.Context, req *updateIncomeReq, id interface{}) error {
+func (h *Handler) deleteIncomeByIDTable(c echo.Context, uid interface{}, id interface{}) error {
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
 	stmtDelete := `Delete from income where user_id = ? and id = ?`
 
-	res, err := h.DB.Exec(stmtDelete, req.UserID, id)
+	res, err := h.DB.Exec(stmtDelete, uid, id)
 
 	if err != nil {
 		h.Logger(c).Errorf("deleteIncomeByIDTable error: %v", err)

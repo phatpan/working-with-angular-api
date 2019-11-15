@@ -26,7 +26,7 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 	e.GET("/income/id/:id", h.getIncomeListByUserID)
 	e.POST("/income", h.addIncomeByUserID)
 	e.PUT("/income/id/:id", h.updateIncomeByUserID)
-	e.DELETE("/income/id/:id", h.deleteIncomeByUserID)
+	e.DELETE("/income/user-id/:userId/id/:id", h.deleteIncomeByUserID)
 
 	e.GET("/income/user-id/:id/search/:search", h.searchIncomeByUserIDWithText)
 }
