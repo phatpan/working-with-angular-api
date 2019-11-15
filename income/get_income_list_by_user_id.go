@@ -8,44 +8,49 @@ import (
 )
 
 type incomeResp struct {
-	ID            int    `json:"id"`
-	IncomeGroupID int    `json:"incomeGroupId"`
-	Amount        int    `json:"amount"`
-	Name          string `json:"name"`
-	Date          string `json:"date"`
+	ID                int    `json:"id"`
+	IncomeGroupID     int    `json:"incomeGroupId"`
+	IncomeNameGroupID string `json:"incomeNameGroupId"`
+	Amount            int    `json:"amount"`
+	Date              string `json:"date"`
 }
 
 func (h *Handler) getIncomeListByUserID(c echo.Context) error {
 	uid := c.Param("id")
-
-	stmt := "select id, income_group_id, amount, name, date from income where user_id = ?"
 	income := []incomeResp{}
+
+	stmt := `select i.id, i.income_group_id, g.name,
+			i.amount, i.date from income i
+			JOIN income_group g on g.id = i.income_group_id
+			where user_id = ? `
 
 	rows, err := h.DB.Query(stmt, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, nil)
 		}
-		h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("getIncomeListByUserID error: %v", err)
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var res incomeResp
-		err := rows.Scan(&res.ID, &res.IncomeGroupID, &res.Amount, &res.Name, &res.Date)
+		name := ""
+		err := rows.Scan(&res.ID, &res.IncomeGroupID, &name, &res.Amount, &res.Date)
 		if err != nil {
-			h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+			h.Logger(c).Errorf("getIncomeListByUserID error: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{
 				"code":    "I-5005",
 				"message": "System error, please try again",
 			})
 		}
+		res.IncomeNameGroupID = name
 		income = append(income, res)
 	}
 	err = rows.Err()
 	if err != nil {
-		h.Logger(c).Errorf("Cannot getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("Cannot getIncomeListByUserID error: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"code":    "I-5006",
 			"message": "System error, please try again",
