@@ -21,7 +21,7 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 		FieldLogger: logger,
 	}
 
-	e.POST("/user", h.saveUserByEmail)
+	e.POST("/user", h.addUserByEmail)
 	e.GET("/user/email/:email", h.getUserByEmail)
 }
 
