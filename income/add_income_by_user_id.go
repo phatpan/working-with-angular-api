@@ -17,15 +17,15 @@ type incomeReq struct {
 }
 
 func (h *Handler) addIncomeByUserID(c echo.Context) error {
-	food := &incomeReq{}
-	if err := c.Bind(food); err != nil {
+	income := &incomeReq{}
+	if err := c.Bind(income); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"code":    "F-5003",
 			"message": "RequestBody invalid",
 		})
 	}
 
-	return h.insertManageFoodByUserIDTable(c, food)
+	return h.insertManageFoodByUserIDTable(c, income)
 }
 
 func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) error {
@@ -51,5 +51,5 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 		})
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.JSON(http.StatusOK, echo.Map{})
 }
