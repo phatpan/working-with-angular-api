@@ -7,6 +7,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type foodSelectedIDReq struct {
+	ID     int `json:"id"`
+	Amount int `json:"amount"`
+}
+
 func (h *Handler) updateIncomeByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
@@ -35,25 +40,25 @@ func (h *Handler) updateIncomeByIDTable(c echo.Context, food *foodSelectedIDReq,
 		})
 	}
 
-	for _, fid := range food.ID {
+	// for _, fid := range food.ID {
 
-		stmtIns := `INSERT INTO m_food (
-		food_id, user_id, created_date)
-		VALUES (?, ?, ?)`
+	// 	stmtIns := `INSERT INTO m_food (
+	// 	food_id, user_id, created_date)
+	// 	VALUES (?, ?, ?)`
 
-		_, err := h.DB.Exec(stmtIns,
-			fid,
-			uid,
-			ct)
+	// 	_, err := h.DB.Exec(stmtIns,
+	// 		fid,
+	// 		uid,
+	// 		ct)
 
-		if err != nil {
-			h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
-			return c.JSON(http.StatusInternalServerError, echo.Map{
-				"code":    "F-5004",
-				"message": "System error, please try again",
-			})
-		}
-	}
+	// 	if err != nil {
+	// 		h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
+	// 		return c.JSON(http.StatusInternalServerError, echo.Map{
+	// 			"code":    "F-5004",
+	// 			"message": "System error, please try again",
+	// 		})
+	// 	}
+	// }
 
 	return c.JSON(http.StatusNoContent, nil)
 }

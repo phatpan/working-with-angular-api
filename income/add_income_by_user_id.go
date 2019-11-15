@@ -10,7 +10,10 @@ import (
 var ct time.Time
 
 type incomeReq struct {
-	ID []int `json:"id"`
+	UserID        int       `json:"userId"`
+	IncomeGroupID int       `json:"incomeGroupId"`
+	Amount        int       `json:"amount"`
+	Date          time.Time `json:"date"`
 }
 
 func (h *Handler) addIncomeByUserID(c echo.Context) error {
@@ -29,34 +32,23 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
-	stmtDeletePayment := `DELETE FROM m_food WHERE user_id = ?;`
-	_, err := h.DB.Exec(stmtDeletePayment, req.ID)
+	stmtIns := `INSERT INTO income (
+		user_id, income_group_id, amount, date, created_date)
+		VALUES (?, ?, ?, ?, ?)`
+
+	_, err := h.DB.Exec(stmtIns,
+		req.UserID,
+		req.IncomeGroupID,
+		req.Amount,
+		req.Date,
+		ct)
+
 	if err != nil {
-		h.Logger(c).Errorf("deleteFoodByUserID error: %v", err)
+		h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"code":    "F-5004",
-			"message": err,
+			"message": "System error, please try again",
 		})
-	}
-
-	for _, fid := range food.ID {
-
-		stmtIns := `INSERT INTO m_food (
-		food_id, user_id, created_date)
-		VALUES (?, ?, ?)`
-
-		_, err := h.DB.Exec(stmtIns,
-			fid,
-			uid,
-			ct)
-
-		if err != nil {
-			h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
-			return c.JSON(http.StatusInternalServerError, echo.Map{
-				"code":    "F-5004",
-				"message": "System error, please try again",
-			})
-		}
 	}
 
 	return c.JSON(http.StatusNoContent, nil)
