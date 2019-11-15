@@ -8,14 +8,17 @@ import (
 )
 
 type incomeResp struct {
-	IncomeGroupID int `json:"incomeGroupId"`
-	Amount        int `json:"amount"`
+	ID            int    `json:"id"`
+	IncomeGroupID int    `json:"incomeGroupId"`
+	Amount        int    `json:"amount"`
+	Name          string `json:"name"`
+	Date          string `json:"date"`
 }
 
 func (h *Handler) getIncomeListByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
-	stmt := "select income_group_id, amount from income where email = ?"
+	stmt := "select id, income_group_id, amount, name, date from income where user_id = ?"
 	income := []incomeResp{}
 
 	rows, err := h.DB.Query(stmt, uid)
@@ -30,7 +33,7 @@ func (h *Handler) getIncomeListByUserID(c echo.Context) error {
 
 	for rows.Next() {
 		var res incomeResp
-		err := rows.Scan(&res.IncomeGroupID, &res.Amount)
+		err := rows.Scan(&res.ID, &res.IncomeGroupID, &res.Amount, &res.Name, &res.Date)
 		if err != nil {
 			h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{
