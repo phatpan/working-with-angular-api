@@ -28,6 +28,8 @@ func NewHandler(e *echo.Echo, db *sql.DB, logger logs.FieldLogger) {
 	e.POST("/outcome", h.addOutcomeByUserID)
 	e.PUT("/outcome/id/:id", h.updateOutcomeByUserID)
 	e.DELETE("/outcome/id/:id", h.deleteOutcomeByUserID)
+
+	e.GET("/outcome/search/:search", h.searchOutcomeByUserIDWithText)
 }
 
 // Logger return logger for given echo context
