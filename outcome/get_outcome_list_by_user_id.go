@@ -7,44 +7,54 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type incomeResp struct {
-	IncomeGroupID int `json:"incomeGroupId"`
-	Amount        int `json:"amount"`
+type outcomeResp struct {
+	ID               int    `json:"id"`
+	OutcomeGroupID   int    `json:"outcomeGroupId"`
+	OutcomeGroupName string `json:"outcomeGroupName"`
+	Name             string `json:"name"`
+	Amount           int    `json:"amount"`
+	Date             string `json:"date"`
 }
 
 func (h *Handler) getOutcomeListByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
-	stmt := "select income_group_id, amount from income where email = ?"
-	income := []incomeResp{}
+	income := []outcomeResp{}
+
+	stmt := `select i.id, i.outcome_group_id, g.name, i.name,
+	i.amount, i.date from outcome i
+			JOIN outcome_group g on g.id = i.outcome_group_id
+			where user_id = ? `
 
 	rows, err := h.DB.Query(stmt, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, nil)
 		}
-		h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("getOutcomeListByUserID error: %v", err)
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var res incomeResp
-		err := rows.Scan(&res.IncomeGroupID, &res.Amount)
+		var res outcomeResp
+		groupName := ""
+		err := rows.Scan(&res.ID, &res.OutcomeGroupID, &groupName, &res.Name, &res.Amount, &res.Date)
 		if err != nil {
-			h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+			h.Logger(c).Errorf("getOutcomeListByUserID error: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{
-				"code":    "I-5005",
+				"code":    "O-5005",
 				"message": "System error, please try again",
 			})
 		}
+		res.OutcomeGroupName = groupName
 		income = append(income, res)
 	}
 	err = rows.Err()
 	if err != nil {
-		h.Logger(c).Errorf("Cannot getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("Cannot getOutcomeListByUserID error: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"code":    "I-5006",
+			"code":    "O-5006",
 			"message": "System error, please try again",
 		})
 	}
