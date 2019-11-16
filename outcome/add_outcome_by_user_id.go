@@ -39,7 +39,7 @@ func (h *Handler) insertOutcomeByUserIDTable(c echo.Context, req *outcomeReq) er
 
 	_, err := h.DB.Exec(stmtIns,
 		req.UserID,
-		req.IncomeGroupID,
+		req.OutcomeGroupID,
 		req.Name,
 		req.Amount,
 		req.Date,
