@@ -20,15 +20,15 @@ func (h *Handler) addIncomeByUserID(c echo.Context) error {
 	income := &incomeReq{}
 	if err := c.Bind(income); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"code":    "F-5003",
+			"code":    "I-5003",
 			"message": "RequestBody invalid",
 		})
 	}
 
-	return h.insertManageFoodByUserIDTable(c, income)
+	return h.insertIncomeByUserIDTable(c, income)
 }
 
-func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) error {
+func (h *Handler) insertIncomeByUserIDTable(c echo.Context, req *incomeReq) error {
 	ct = time.Now()
 	ct.Format(time.RFC3339)
 
@@ -45,9 +45,9 @@ func (h *Handler) insertManageFoodByUserIDTable(c echo.Context, req *incomeReq) 
 		req.UserID)
 
 	if err != nil {
-		h.Logger(c).Errorf("insertManageFoodByUserIdTable error: %v", err)
+		h.Logger(c).Errorf("insertIncomeByUserIDTable error: %v", err)
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"code":    "F-5004",
+			"code":    "I-5004",
 			"message": "System error, please try again",
 		})
 	}
