@@ -35,7 +35,7 @@ func main() {
 
 	e.Use(echomiddleware.CORSWithConfig(echomiddleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.POST, echo.PUT, echo.GET},
+		AllowMethods: []string{echo.POST, echo.PUT, echo.GET, echo.DELETE},
 	}))
 
 	user.NewHandler(e, db, fieldLogger)
