@@ -8,11 +8,11 @@ import (
 )
 
 type incomeResp struct {
-	ID                int    `json:"id"`
-	IncomeGroupID     int    `json:"incomeGroupId"`
-	IncomeNameGroupID string `json:"incomeNameGroupId"`
-	Amount            int    `json:"amount"`
-	Date              string `json:"date"`
+	ID              int    `json:"id"`
+	IncomeGroupID   int    `json:"incomeGroupId"`
+	IncomeGroupName string `json:"incomeGroupName"`
+	Amount          int    `json:"amount"`
+	Date            string `json:"date"`
 }
 
 func (h *Handler) getIncomeListByUserID(c echo.Context) error {
@@ -45,7 +45,7 @@ func (h *Handler) getIncomeListByUserID(c echo.Context) error {
 				"message": "System error, please try again",
 			})
 		}
-		res.IncomeNameGroupID = name
+		res.IncomeGroupName = name
 		income = append(income, res)
 	}
 	err = rows.Err()
