@@ -8,46 +8,54 @@ import (
 )
 
 type searchResp struct {
-	IncomeGroupID int `json:"incomeGroupId"`
-	Amount        int `json:"amount"`
+	ID               int    `json:"id"`
+	OutcomeGroupID   int    `json:"outcomeGroupId"`
+	OutcomeGroupName string `json:"OutcomeGroupName"`
+	Amount           int    `json:"amount"`
+	Name             string `json:"name"`
+	Date             string `json:"date"`
 }
 
 func (h *Handler) searchOutcomeByUserIDWithText(c echo.Context) error {
+	search := c.Param("search")
 	uid := c.Param("id")
 
-	stmt := "select income_group_id, amount from income where email = ?"
-	income := []searchResp{}
+	stmt := `select i.id, i.outcome_group_id, g.name, i.name,  i.amount, i.date from outcome i
+			JOIN outcome_group g on g.id = i.outcome_group_id
+			where g.name LIKE CONCAT('%',?,'%') or i.amount LIKE CONCAT('%',?,'%') and i.user_id= ?`
+	oc := []searchResp{}
 
-	rows, err := h.DB.Query(stmt, uid)
+	rows, err := h.DB.Query(stmt, search, search, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, nil)
 		}
-		h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("searchOutcomeByUserIDWithText error: %v", err)
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var res searchResp
-		err := rows.Scan(&res.IncomeGroupID, &res.Amount)
+		err := rows.Scan(&res.ID, &res.OutcomeGroupID, &res.OutcomeGroupName, &res.Name,
+			&res.Amount, &res.Date)
 		if err != nil {
-			h.Logger(c).Errorf("getIncomeByEmail error: %v", err)
+			h.Logger(c).Errorf("searchOutcomeByUserIDWithText error: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{
-				"code":    "I-5005",
+				"code":    "O-5005",
 				"message": "System error, please try again",
 			})
 		}
-		income = append(income, res)
+		oc = append(oc, res)
 	}
 	err = rows.Err()
 	if err != nil {
-		h.Logger(c).Errorf("Cannot getIncomeByEmail error: %v", err)
+		h.Logger(c).Errorf("searchOutcomeByUserIDWithText error: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"code":    "I-5006",
+			"code":    "O-5006",
 			"message": "System error, please try again",
 		})
 	}
 
-	return c.JSON(http.StatusOK, income)
+	return c.JSON(http.StatusOK, oc)
 }

@@ -19,7 +19,7 @@ type outcomeResp struct {
 func (h *Handler) getOutcomeListByUserID(c echo.Context) error {
 	uid := c.Param("id")
 
-	income := []outcomeResp{}
+	oc := []outcomeResp{}
 
 	stmt := `select i.id, i.outcome_group_id, g.name, i.name,
 	i.amount, i.date from outcome i
@@ -48,7 +48,7 @@ func (h *Handler) getOutcomeListByUserID(c echo.Context) error {
 			})
 		}
 		res.OutcomeGroupName = groupName
-		income = append(income, res)
+		oc = append(oc, res)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -59,5 +59,5 @@ func (h *Handler) getOutcomeListByUserID(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, income)
+	return c.JSON(http.StatusOK, oc)
 }

@@ -12,8 +12,8 @@ var ct time.Time
 type outcomeReq struct {
 	UserID         int       `json:"userId"`
 	OutcomeGroupID int       `json:"outcomeGroupId"`
-	Amount         int       `json:"amount"`
 	Name           string    `json:"name"`
+	Amount         int       `json:"amount"`
 	Date           time.Time `json:"date"`
 }
 
@@ -34,8 +34,8 @@ func (h *Handler) insertOutcomeByUserIDTable(c echo.Context, req *outcomeReq) er
 	ct.Format(time.RFC3339)
 
 	stmtIns := `INSERT INTO outcome (
-		user_id, income_group_id, name,  amount, date, created_date, created_by)
-		VALUES (?, ?, ?, ?, ?, ?)`
+		user_id, outcome_group_id, name, amount, date, created_date, created_by)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := h.DB.Exec(stmtIns,
 		req.UserID,
